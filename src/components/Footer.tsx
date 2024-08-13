@@ -7,7 +7,7 @@ import { Input } from "./ui/input";
 
 export default function Footer() {
   return (
-    <footer className="bg-primary pb-6 px-6 lg:pt-12 lg:pb-14 lg:px-20 text-white">
+    <footer className="bg-primary font-light pb-6 px-6 lg:pt-12 lg:pb-14 lg:px-20 text-white">
       <div className="max-w-[1920px] mx-auto flex flex-col">
         <Logo className="w-28 h-20 lg:w-44 text-white" />
         <div className="flex flex-col xl:flex-row xl:justify-between">
