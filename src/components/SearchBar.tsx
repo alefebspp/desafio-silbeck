@@ -7,7 +7,7 @@ export default function SearchBar() {
   return (
     <div className="py-4 px-6 lg:py-8 lg:px-12 bg-primary text-white">
       <div className="max-w-[1920px] mx-auto flex flex-col lg:flex-row lg:items-center lg:gap-4 3xl:justify-center">
-        <div className="flex flex-col gap-2 lg:w-[45%] 3xl:flex-row 3xl:items-center 3xl:gap-6 max-w-[680px]">
+        <div className="flex flex-col gap-2 lg:w-[45%] 3xl:flex-row 3xl:items-center 3xl:gap-6 lg:max-w-[680px]">
           <label className="text-2xl font-medium" htmlFor="">
             Data Estadia
           </label>
@@ -22,7 +22,7 @@ export default function SearchBar() {
             </div>
           </div>
         </div>
-        <div className="flex flex-col gap-2 mt-4 lg:mt-0 lg:w-[45%] 3xl:flex-row 3xl:items-center 3xl:gap-6 max-w-[680px]">
+        <div className="flex flex-col gap-2 mt-4 lg:mt-0 lg:w-[45%] 3xl:flex-row 3xl:items-center 3xl:gap-6 lg:max-w-[680px]">
           <label className="text-2xl font-medium" htmlFor="">
             Hóspedes
           </label>
