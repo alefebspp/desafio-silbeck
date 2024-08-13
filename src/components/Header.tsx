@@ -1,19 +1,16 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import logo from "../../public/logo.svg";
 import {
   faCartFlatbedSuitcase,
   faChevronDown,
 } from "@fortawesome/free-solid-svg-icons";
+import Logo from "./Logo";
 
 export default function Header() {
   return (
     <header className="px-6 lg:px-12 max-h-[128px] h-[128px]">
       <div className="max-w-[1920px] relative top-1/2 -translate-y-1/2 flex justify-between items-center mx-auto">
-        <img
-          className="w-28 h-20 lg:w-44"
-          src={logo}
-          alt="Logo Hotel Silbeck"
-        />
+        <Logo className="w-28 h-20 lg:w-44 text-[#333333]" />
+
         <div className="hidden lg:flex gap-6 items-center">
           <a href="#menu">Menu</a>
           <a href="#menu">Quartos</a>
