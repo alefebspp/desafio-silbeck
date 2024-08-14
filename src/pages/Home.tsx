@@ -1,5 +1,6 @@
 import Reviews from "@/components/Reviews";
 import RoomCard from "@/components/RoomCard";
+import RoomsList from "@/components/RoomsList";
 import SearchBar from "@/components/SearchBar";
 
 export default function HomePage() {
@@ -11,11 +12,7 @@ export default function HomePage() {
         <p className="text-font mt-2 text-2xl">
           Todos os nossos tipos de quartos incluem café da manhã
         </p>
-        <div className="flex flex-wrap justify-between gap-8 mt-8">
-          <RoomCard />
-          <RoomCard />
-          <RoomCard />
-        </div>
+        <RoomsList />
         <Reviews />
       </div>
     </>
