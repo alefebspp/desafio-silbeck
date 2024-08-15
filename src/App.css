@@ -3,7 +3,36 @@ html {
   scroll-behavior: smooth;
 }
 
+@font-face {
+  font-family: 'Inter';
+  src: url('/assets/fonts/Inter_28pt-Light.ttf');
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Inter';
+  src: url('/assets/fonts/Inter_28pt-Regular.ttf');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Inter';
+  src: url('/assets/fonts/Inter_28pt-Medium.ttf');
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Inter';
+  src: url('/assets/fonts/Inter_28pt-SemiBold.ttf');
+  font-weight: 600;
+  font-style: normal;
+}
+
 #root {
+  font-family: "Inter";
   min-height: 100vh;
   background-color: #F5F5F5;
 }
@@ -15,3 +44,4 @@ html {
 .read-the-docs {
   color: #888;
 }
+
