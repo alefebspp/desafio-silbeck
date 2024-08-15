@@ -1,126 +1,220 @@
-import { Button, buttonVariants } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
+
 import {
-  faCheck,
-  faMinus,
-  faPlus,
-  faTrash,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import BookingSummary from "@/components/BookingSummary";
+import { useEffect } from "react";
+import { useRoomsContext } from "@/contexts/roomsContext";
+import { useToast } from "@/components/ui/use-toast";
+
+const formSchema = z.object({
+  name: z
+    .string({ message: "Campo obrigatório" })
+    .min(1, { message: "Campo obrigatório" }),
+  email: z
+    .string({ message: "Campo obrigatório" })
+    .email({ message: "Email inválido" })
+    .min(1, { message: "Campo obrigatório" }),
+  card_name: z
+    .string({ message: "Campo obrigatório" })
+    .min(1, { message: "Campo obrigatório" }),
+  card_number: z
+    .string({ message: "Campo obrigatório" })
+    .min(16, { message: "Minímo de 16 caracteres" })
+    .max(16, { message: "Máximo de 16 caracteres" }),
+  cvc: z
+    .string({ message: "Campo obrigatório" })
+    .min(3, { message: "Minímo de 3 caracteres" })
+    .max(3, { message: "Máximo de caracteres" }),
+  validity: z
+    .string({ message: "Campo obrigatório" })
+    .min(5, { message: "O campo deve ter o formato mês/ano" })
+    .max(5, { message: "O campo deve ter o formato mês/ano" }),
+  type: z.string().min(1),
+});
 
 export default function PaymentPage() {
+  const { rooms, setRooms } = useRoomsContext();
+  const { toast } = useToast();
+  const navigate = useNavigate();
+  const formSavedValues = window.localStorage.getItem("form");
+
+  const disabled = rooms.length == 0;
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: formSavedValues
+      ? JSON.parse(formSavedValues)
+      : {
+          type: "credit_card",
+        },
+  });
+
+  function onSubmit(values: z.infer<typeof formSchema>) {
+    setRooms([]);
+    window.localStorage.removeItem("form");
+    window.localStorage.removeItem("rooms");
+    toast({
+      title: "Reserva efetuada com Sucesso",
+      description: "Você pode acompanhar os detalhes no e-mail de cadastro.",
+      icon: "fa-solid fa-circle-check",
+      iconClassname: "text-[#52C41A]",
+    });
+    navigate("/");
+  }
+
+  useEffect(() => {
+    const toBeSavedValues: { [key: string]: string } = form.watch();
+    Object.keys(form.watch()).map((key) => {
+      if (!toBeSavedValues[key]) {
+        toBeSavedValues[key] = "";
+      }
+    });
+    window.localStorage.setItem("form", JSON.stringify(toBeSavedValues));
+  }, [form.watch()]);
+
   return (
-    <form className="max-w-[1920px] mx-auto flex flex-col xl:flex-row xl:p-12 xl:px-20 xl:gap-12">
-      <div className="flex flex-col gap-4 text-font text-lg p-6 lg:p-12 lg:px-20 xl:p-0 xl:w-1/2">
-        <h1 className="text-2xl font-semibold text-graphite">Identificação</h1>
-        <div className="flex flex-col gap-1">
-          <label htmlFor="name">Nome</label>
-          <Input />
-        </div>
-        <div className="flex flex-col gap-1">
-          <label htmlFor="email">E-mail</label>
-          <Input />
-        </div>
-        <hr className="w-full bg-font-light/20 h-[1px] my-4" />
-        <h1 className="text-2xl font-semibold text-graphite">Pagamento</h1>
-        <div className="flex gap-4 items-center">
-          <Input
-            className="w-6 h-6"
-            id="credit_card"
-            value="credit_card"
-            type="radio"
+    <Form {...form}>
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="max-w-[1920px] mx-auto flex flex-col xl:flex-row xl:p-12 xl:px-20 xl:gap-12"
+      >
+        <div className="flex flex-col gap-4 text-font text-lg p-6 lg:p-12 lg:px-20 xl:p-0 xl:w-1/2">
+          <h1 className="text-2xl font-semibold text-graphite">
+            Identificação
+          </h1>
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  Nome <span className="text-red-500">*</span>
+                </FormLabel>
+                <FormControl>
+                  <Input disabled={disabled} {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
           />
-          <label htmlFor="credit_card">Cartão de Crédito</label>
-          <Input className="w-6 h-6" id="pix" value="pix" type="radio" />
-          <label htmlFor="pix">PIX</label>
-        </div>
-        <div className="flex flex-col gap-1">
-          <label htmlFor="card_name">Nome Cartão</label>
-          <Input />
-        </div>
-        <div className="flex flex-col gap-1">
-          <label htmlFor="card_number">Número Cartão</label>
-          <Input placeholder="0000 0000 0000 0000" />
-        </div>
-        <div className="flex justify-between w-full">
-          <div className="flex flex-col gap-1 w-[calc(50%-1rem)]">
-            <label htmlFor="validity">Validade</label>
-            <Input placeholder="00/00" />
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  Email <span className="text-red-500">*</span>
+                </FormLabel>
+                <FormControl>
+                  <Input disabled={disabled} {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <hr className="w-full bg-font-light/20 h-[1px] my-4" />
+          <h1 className="text-2xl font-semibold text-graphite">Pagamento</h1>
+          <div className="flex gap-4 items-center">
+            <Input
+              disabled={disabled}
+              className="w-4 h-4"
+              id="credit_card"
+              value="credit_card"
+              type="radio"
+              checked={form.watch("type") === "credit_card"}
+              onChange={(e) => {
+                const value = e.target.value;
+                form.setValue("type", value);
+              }}
+            />
+            <label htmlFor="credit_card">Cartão de Crédito</label>
+            <Input
+              disabled={disabled}
+              className="w-4 h-4"
+              id="pix"
+              value="pix"
+              type="radio"
+              checked={form.watch("type") === "pix"}
+              onChange={(e) => {
+                const value = e.target.value;
+                form.setValue("type", value);
+              }}
+            />
+            <label htmlFor="pix">PIX</label>
           </div>
-          <div className="flex flex-col gap-1 w-[calc(50%-1rem)]">
-            <label htmlFor="cvc">CVC</label>
-            <Input placeholder="000" />
-          </div>
-        </div>
-      </div>
-      <div className="bg-white flex flex-col p-6 lg:p-12 lg:px-20 xl:p-8 text-graphite xl:w-1/2">
-        <h1 className="text-2xl font-semibold mb-4">Resumo da reserva</h1>
+          <FormField
+            control={form.control}
+            name="card_name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Nome Cartão</FormLabel>
+                <FormControl>
+                  <Input disabled={disabled} {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="card_number"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Número Cartão</FormLabel>
+                <FormControl>
+                  <Input
+                    disabled={disabled}
+                    placeholder="0000 0000 0000 0000"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-        <div className="flex flex-col">
-          <div className="py-6 flex justify-between border-b border-font-light/20">
-            <div className="flex flex-col gap-4 text-sm">
-              <h2 className="text-lg font-semibold">Suíte Master</h2>
-              <p>Diárias: 2</p>
-              <p>Estadia: 08/12/2023 - 10/12/2023</p>
-              <p>Qtde Hóspedes: 3</p>
-            </div>
-            <div className="flex flex-col gap-4 items-end">
-              <span className="text-lg font-semibold w-fit">R$ 320,00</span>
-              <div className="h-10 px-4 mb-8 text-lg text-font border border-graphite rounded-lg flex gap-4 justify-center items-center">
-                <FontAwesomeIcon icon={faMinus} />
-                <span className="font-semibold">2</span>{" "}
-                <FontAwesomeIcon icon={faPlus} />
-              </div>
-              <div className="flex gap-2 items-center text-red-500 w-fit">
-                <FontAwesomeIcon icon={faTrash} />
-                <span>Excluir</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="py-6 flex justify-between border-b border-font-light/20">
-            <div className="flex flex-col gap-4 text-sm">
-              <h2 className="text-lg font-semibold">Luxo Casal</h2>
-              <p>Diárias: 4</p>
-              <p>Estadia: 08/12/2023 - 10/12/2023</p>
-              <p>Qtde Hóspedes: 3</p>
-            </div>
-            <div className="flex flex-col gap-4 items-end">
-              <span className="text-lg font-semibold w-fit">R$ 480,00</span>
-              <div className="h-10 px-4 mb-8 text-lg text-font border border-graphite rounded-lg flex gap-4 justify-center items-center">
-                <FontAwesomeIcon icon={faMinus} />
-                <span className="font-semibold">4</span>{" "}
-                <FontAwesomeIcon icon={faPlus} />
-              </div>
-              <div className="flex gap-2 items-center text-red-500 w-fit">
-                <FontAwesomeIcon icon={faTrash} />
-                <span>Excluir</span>
-              </div>
-            </div>
-          </div>
-          <div className="flex flex-col gap-8 pt-6">
-            <div className="flex justify-between text-graphite font-semibold text-lg">
-              <h2>Valor Total</h2>
-              <span>R$ 800,00</span>
-            </div>
-            <div className="flex flex-col gap-4 lg:flex-row lg:gap-8 ">
-              <a
-                href="/"
-                className={buttonVariants({
-                  variant: "outline",
-                  className: "w-full lg:w-2/5",
-                })}
-              >
-                Cancelar
-              </a>
-              <Button variant="success" className="w-full lg:w-3/5 gap-2">
-                <FontAwesomeIcon icon={faCheck} />
-                Confirmar pagamento
-              </Button>
-            </div>
+          <div className="flex justify-between w-full">
+            <FormField
+              control={form.control}
+              name="validity"
+              render={({ field }) => (
+                <FormItem className="w-[calc(50%-1rem)]">
+                  <FormLabel>Validade</FormLabel>
+                  <FormControl>
+                    <Input disabled={disabled} placeholder="00/00" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="cvc"
+              render={({ field }) => (
+                <FormItem className="w-[calc(50%-1rem)]">
+                  <FormLabel>CVC</FormLabel>
+                  <FormControl>
+                    <Input disabled={disabled} placeholder="000" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </div>
         </div>
-      </div>
-    </form>
+        <BookingSummary />
+      </form>
+    </Form>
   );
 }

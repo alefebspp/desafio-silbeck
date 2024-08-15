@@ -1,20 +1,32 @@
-import { useState } from "react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { cn } from "@/lib/utils";
+
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
+import FaIcon from "./FaIcon";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCalendar } from "@fortawesome/free-solid-svg-icons";
+import { cn } from "@/lib/utils";
 
-export function DatePicker() {
-  const [date, setDate] = useState<Date>();
+type Props = {
+  onSelect: (date?: Date) => void;
+  date?: Date;
+  startsAt?: Date | null;
+};
 
+export function DatePicker({ onSelect, date, startsAt }: Props) {
+  function getDisabledDates() {
+    if (startsAt) {
+      return [{ before: startsAt }];
+    }
+    if (startsAt === null) {
+      return [{ before: new Date() }, { after: new Date() }, new Date()];
+    }
+    return [{ before: new Date() }];
+  }
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -29,9 +41,9 @@ export function DatePicker() {
           ) : (
             <span className="text-font-light">Selecione uma data</span>
           )}
-          <FontAwesomeIcon
+          <FaIcon
             className="h-6 w-6 text-font-light"
-            icon={faCalendar}
+            icon="fa-regular fa-calendar"
           />
         </Button>
       </PopoverTrigger>
@@ -40,8 +52,9 @@ export function DatePicker() {
           locale={ptBR}
           mode="single"
           selected={date}
-          onSelect={setDate}
+          onSelect={(date) => onSelect(date)}
           initialFocus
+          disabled={getDisabledDates()}
         />
       </PopoverContent>
     </Popover>
