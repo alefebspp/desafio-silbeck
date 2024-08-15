@@ -1,0 +1,17 @@
+html {
+  font-weight: 400;
+  scroll-behavior: smooth;
+}
+
+#root {
+  min-height: 100vh;
+  background-color: #F5F5F5;
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
