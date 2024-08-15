@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
@@ -12,9 +11,22 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 
-export function DatePicker() {
-  const [date, setDate] = useState<Date>();
+type Props = {
+  onSelect: (date?: Date) => void;
+  date?: Date;
+  startsAt?: Date | null;
+};
 
+export function DatePicker({ onSelect, date, startsAt }: Props) {
+  function getDisabledDates() {
+    if (startsAt) {
+      return [{ before: startsAt }];
+    }
+    if (startsAt === null) {
+      return [{ before: new Date() }, { after: new Date() }, new Date()];
+    }
+    return [{ before: new Date() }];
+  }
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -40,8 +52,9 @@ export function DatePicker() {
           locale={ptBR}
           mode="single"
           selected={date}
-          onSelect={setDate}
+          onSelect={(date) => onSelect(date)}
           initialFocus
+          disabled={getDisabledDates()}
         />
       </PopoverContent>
     </Popover>

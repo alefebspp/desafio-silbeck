@@ -1,3 +1,4 @@
+import { format } from "date-fns";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   Select,
@@ -7,11 +8,55 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "./ui/button";
-import { Input } from "./ui/input";
 import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 import { DatePicker } from "./DatePicker";
+import { useRoomsContext } from "@/contexts/roomsContext";
 
 export default function SearchBar() {
+  const {
+    startDate,
+    setStartDate,
+    endDate,
+    setEndDate,
+    adults,
+    setAdults,
+    children,
+    setChildren,
+    setShouldRefetchRooms,
+  } = useRoomsContext();
+
+  function onStartDateSelect(date?: Date) {
+    setStartDate(date);
+  }
+
+  function onEndDateSelect(date?: Date) {
+    setEndDate(date);
+  }
+
+  function onAdultsValueChange(value: string) {
+    setAdults(parseInt(value));
+  }
+
+  function onChildrenValueChange(value: string) {
+    setChildren(parseInt(value));
+  }
+
+  function handleSearchRequest() {
+    if (startDate) {
+      window.localStorage.setItem("startDate", format(startDate, "yyyy-MM-dd"));
+    }
+    if (endDate) {
+      window.localStorage.setItem("endDate", format(endDate, "yyyy-MM-dd"));
+    }
+    if (adults) {
+      window.localStorage.setItem("adults", adults.toString());
+    }
+    if (children) {
+      window.localStorage.setItem("children", children.toString());
+    }
+    setShouldRefetchRooms(true);
+  }
+
   return (
     <div className="py-4 px-6 lg:py-8 lg:px-12 bg-primary text-white">
       <div className="max-w-[1920px] mx-auto flex flex-col lg:flex-row lg:items-center lg:gap-4 3xl:justify-center">
@@ -22,11 +67,15 @@ export default function SearchBar() {
           <div className="flex flex-col lg:flex-row lg:gap-4 3xl:gap-8">
             <div className="flex flex-col gap-1 lg:w-[calc(50%-0.5rem)] lg:max-w-64 3xl:min-w-64">
               <label htmlFor="">Entrada</label>
-              <DatePicker />
+              <DatePicker date={startDate} onSelect={onStartDateSelect} />
             </div>
             <div className="flex flex-col gap-1 lg:w-[calc(50%-0.5rem)] lg:max-w-64 3xl:min-w-64">
               <label htmlFor="">Saída</label>
-              <DatePicker />
+              <DatePicker
+                date={endDate}
+                onSelect={onEndDateSelect}
+                startsAt={startDate ? startDate : null}
+              />
             </div>
           </div>
         </div>
@@ -37,33 +86,45 @@ export default function SearchBar() {
           <div className="flex flex-col lg:flex-row lg:gap-4 3xl:gap-8">
             <div className="flex flex-col gap-1 lg:w-[calc(50%-0.5rem)] lg:max-w-64 3xl:min-w-64">
               <label htmlFor="">Adultos</label>
-              <Select>
+              <Select
+                value={adults?.toString()}
+                onValueChange={(value) => onAdultsValueChange(value)}
+              >
                 <SelectTrigger>
-                  <SelectValue placeholder="Theme" />
+                  <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="light">Light</SelectItem>
-                  <SelectItem value="dark">Dark</SelectItem>
-                  <SelectItem value="system">System</SelectItem>
+                  <SelectItem value="1">1</SelectItem>
+                  <SelectItem value="2">2</SelectItem>
+                  <SelectItem value="3">3</SelectItem>
+                  <SelectItem value="4">4</SelectItem>
+                  <SelectItem value="5">5</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div className="flex flex-col gap-1 lg:w-[calc(50%-0.5rem)] lg:max-w-64 3xl:min-w-64">
               <label htmlFor="">Crianças</label>
-              <Select>
+              <Select
+                value={children?.toString()}
+                onValueChange={(value) => onChildrenValueChange(value)}
+              >
                 <SelectTrigger>
-                  <SelectValue placeholder="Theme" />
+                  <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="light">Light</SelectItem>
-                  <SelectItem value="dark">Dark</SelectItem>
-                  <SelectItem value="system">System</SelectItem>
+                  <SelectItem value="1">1</SelectItem>
+                  <SelectItem value="2">2</SelectItem>
+                  <SelectItem value="3">3</SelectItem>
+                  <SelectItem value="4">4</SelectItem>
+                  <SelectItem value="5">5</SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </div>
         </div>
         <Button
+          onClick={handleSearchRequest}
+          type="button"
           variant="secondary"
           className="mt-8 flex gap-2 lg:mt-auto xl:w-[10%]"
         >
