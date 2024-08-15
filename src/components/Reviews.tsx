@@ -15,7 +15,7 @@ export default function Reviews() {
   const { isLoading, data } = getTestimonials();
 
   return (
-    <div className="flex flex-col mt-24 pb-16">
+    <div id="avaliacoes" className="flex flex-col mt-24 pb-16">
       <h1 className="text-primary font-semibold text-4xl mb-8">Avaliações</h1>
       {isLoading ? (
         <div className="w-[90%] mx-auto flex lg:justify-between">

@@ -16,9 +16,9 @@ export default function Header() {
           <Logo className="w-28 h-20 lg:w-44 text-graphite" />
         </a>
         <div className="hidden lg:flex gap-6 items-center text-graphite">
-          <a href="#menu">Menu</a>
-          <a href="#menu">Quartos</a>
-          <a href="#menu">Avaliações</a>
+          <a href="/#menu">Menu</a>
+          <a href="/#quartos">Quartos</a>
+          <a href="/#avaliacoes">Avaliações</a>
         </div>
         <div className="flex gap-8 items-center">
           <div className="flex gap-2 items-center text-graphite">
