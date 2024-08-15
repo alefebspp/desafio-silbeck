@@ -6,6 +6,7 @@ export default function useRoomQueries() {
     const query = useQuery({
       queryKey: ["rooms"],
       queryFn: getRoomsRequest,
+      refetchOnWindowFocus: false,
     });
 
     return query;

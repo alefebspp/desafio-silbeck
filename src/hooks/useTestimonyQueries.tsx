@@ -6,6 +6,7 @@ export default function useTestimonyQueries() {
     const query = useQuery({
       queryKey: ["testimonials"],
       queryFn: getTestimonialsRequest,
+      refetchOnWindowFocus: false,
     });
 
     return query;
