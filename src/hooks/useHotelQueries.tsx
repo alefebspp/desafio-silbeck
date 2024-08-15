@@ -6,6 +6,7 @@ export default function useHotelQueries() {
     const query = useQuery({
       queryKey: ["hotel"],
       queryFn: getHotelInfo,
+      refetchOnWindowFocus: false,
     });
 
     return query;
