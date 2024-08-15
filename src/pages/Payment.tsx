@@ -61,6 +61,7 @@ export default function PaymentPage() {
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
+    console.log(values);
     setRooms([]);
     window.localStorage.removeItem("form");
     window.localStorage.removeItem("rooms");
