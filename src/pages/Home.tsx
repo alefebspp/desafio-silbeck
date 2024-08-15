@@ -1,5 +1,4 @@
 import Reviews from "@/components/Reviews";
-import RoomCard from "@/components/RoomCard";
 import RoomsList from "@/components/RoomsList";
 import SearchBar from "@/components/SearchBar";
 
