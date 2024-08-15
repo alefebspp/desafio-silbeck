@@ -17,7 +17,7 @@ export default function BookingSummary() {
   }, 0);
 
   return (
-    <div className="h-fit bg-white flex flex-col p-6 lg:p-12 lg:px-20 xl:p-8 text-graphite xl:w-1/2">
+    <div className="h-fit bg-white flex flex-col lg:rounded-lg p-6 lg:p-12 lg:px-20 xl:p-8 text-graphite xl:w-1/2">
       {cartIsEmpty ? (
         <EmptyCart />
       ) : (
