@@ -44,12 +44,12 @@ const formSchema = z.object({
 });
 
 export default function PaymentPage() {
-  const { rooms, setRooms } = useRoomsContext();
+  const { state, dispatch } = useRoomsContext();
   const { toast } = useToast();
   const navigate = useNavigate();
   const formSavedValues = window.localStorage.getItem("form");
 
-  const disabled = rooms.length == 0;
+  const disabled = state.rooms.length == 0;
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -62,7 +62,7 @@ export default function PaymentPage() {
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
-    setRooms([]);
+    dispatch({ type: "SET_ROOMS", payload: [] });
     window.localStorage.removeItem("form");
     window.localStorage.removeItem("rooms");
     toast({

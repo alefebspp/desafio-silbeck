@@ -7,7 +7,7 @@ import Logo from "./Logo";
 import { useRoomsContext } from "@/contexts/roomsContext";
 
 export default function Header() {
-  const { rooms } = useRoomsContext();
+  const { state } = useRoomsContext();
 
   return (
     <header className="px-6 lg:px-12 max-h-[128px] h-[128px]">
@@ -30,9 +30,9 @@ export default function Header() {
             className="relative w-6 h-6 lg:w-fit lg:rounded-md lg:gap-2 lg:py-5 p-4 rounded-full flex items-center justify-center border-2 border-primary text-primary"
             href="/pagamento"
           >
-            {rooms.length > 0 && (
+            {state.rooms.length > 0 && (
               <div className="absolute bg-red-500 rounded-full w-4 h-4 flex items-center justify-center -top-2 -right-2">
-                <span className="text-sm text-white">{rooms.length}</span>
+                <span className="text-sm text-white">{state.rooms.length}</span>
               </div>
             )}
             <FontAwesomeIcon

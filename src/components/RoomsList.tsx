@@ -4,17 +4,17 @@ import { useEffect } from "react";
 import { useRoomsContext } from "@/contexts/roomsContext";
 
 export default function RoomsList() {
-  const { shouldRefetchRooms, setShouldRefetchRooms } = useRoomsContext();
+  const { state, dispatch } = useRoomsContext();
   const { getRooms } = useRoomQueries();
 
   const { isLoading, data, refetch, isRefetching } = getRooms();
 
   useEffect(() => {
-    if (shouldRefetchRooms) {
+    if (state.shouldRefetchRooms) {
       refetch();
-      setShouldRefetchRooms(false);
+      dispatch({ type: "SET_SHOULD_REFETCH_ROOMS", payload: false });
     }
-  }, [shouldRefetchRooms]);
+  }, [state.shouldRefetchRooms]);
 
   if (isLoading || isRefetching) {
     return (

@@ -2,100 +2,84 @@ import { useRoomsContext } from "@/contexts/roomsContext";
 import { Room } from "@/types";
 
 export default function useCart() {
-  const { rooms, setRooms } = useRoomsContext();
+  const { state, dispatch } = useRoomsContext();
 
   function book(room: Room) {
     const targetRoom = room.id;
-    const roomAlreadyAdded = rooms.find(({ room }) => targetRoom === room.id);
+    const roomAlreadyAdded = state.rooms.find(
+      ({ room }) => targetRoom === room.id
+    );
 
     if (roomAlreadyAdded) {
       return;
     }
 
-    setRooms((prev) => [...prev, { room, quantity: 1 }]);
+    dispatch({
+      type: "SET_ROOMS",
+      payload: [...state.rooms, { room, quantity: 1 }],
+    });
     window.localStorage.setItem(
       "rooms",
-      JSON.stringify([...rooms, { room, quantity: 1 }])
+      JSON.stringify([...state.rooms, { room, quantity: 1 }])
     );
   }
 
   function addRoomQuantity(id: number) {
-    const targetRoom = rooms.find(({ room }) => id === room.id);
+    const targetRoom = state.rooms.find(({ room }) => id === room.id);
+
+    const roomWithAddedQuantity = state.rooms.map((item) => {
+      if (item.room.id === id) {
+        return {
+          ...item,
+          quantity: item.quantity + 1,
+        };
+      }
+      return item;
+    });
 
     if (targetRoom) {
-      setRooms((prev) =>
-        prev.map((item) => {
-          if (item.room.id === id) {
-            return {
-              ...item,
-              quantity: item.quantity + 1,
-            };
-          }
-          return item;
-        })
-      );
+      dispatch({ type: "SET_ROOMS", payload: roomWithAddedQuantity });
       window.localStorage.setItem(
         "rooms",
-        JSON.stringify(
-          rooms.map((item) => {
-            if (item.room.id === id) {
-              return {
-                ...item,
-                quantity: item.quantity + 1,
-              };
-            }
-            return item;
-          })
-        )
+        JSON.stringify(roomWithAddedQuantity)
       );
     }
   }
 
   function removeRoomQuantity(id: number) {
-    const targetRoom = rooms.find(({ room }) => id === room.id);
+    const targetRoom = state.rooms.find(({ room }) => id === room.id);
+    const roomWithRemovedQuantity = state.rooms.map((item) => {
+      if (item.room.id === id) {
+        return {
+          ...item,
+          quantity: item.quantity - 1,
+        };
+      }
+      return item;
+    });
 
     if (targetRoom) {
       if (targetRoom.quantity === 1) {
         return removeRoom(id);
       }
 
-      setRooms((prev) =>
-        prev.map((item) => {
-          if (item.room.id === id) {
-            return {
-              ...item,
-              quantity: item.quantity - 1,
-            };
-          }
-          return item;
-        })
-      );
+      dispatch({ type: "SET_ROOMS", payload: roomWithRemovedQuantity });
       window.localStorage.setItem(
         "rooms",
-        JSON.stringify(
-          rooms.map((item) => {
-            if (item.room.id === id) {
-              return {
-                ...item,
-                quantity: item.quantity - 1,
-              };
-            }
-            return item;
-          })
-        )
+        JSON.stringify(roomWithRemovedQuantity)
       );
     }
   }
 
   function removeRoom(id: number) {
-    const filteredRooms = rooms.filter(({ room }) => room.id !== id);
-    setRooms(filteredRooms);
+    const filteredRooms = state.rooms.filter(({ room }) => room.id !== id);
+    dispatch({ type: "SET_ROOMS", payload: filteredRooms });
     window.localStorage.setItem("rooms", JSON.stringify(filteredRooms));
   }
 
   return {
     book,
-    rooms,
+    rooms: state.rooms,
     removeRoom,
     addRoomQuantity,
     removeRoomQuantity,

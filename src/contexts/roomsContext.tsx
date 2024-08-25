@@ -2,28 +2,61 @@ import { parseISO, formatISO } from "date-fns";
 import { RoomWithQuantity } from "@/types";
 import {
   createContext,
-  Dispatch,
   FC,
   ReactNode,
-  SetStateAction,
-  useState,
   useContext,
   useEffect,
+  useReducer,
 } from "react";
 
-export interface RoomsContextProps {
+export interface RoomsState {
   rooms: RoomWithQuantity[];
-  setRooms: Dispatch<SetStateAction<RoomWithQuantity[]>>;
   startDate: Date | undefined;
-  setStartDate: Dispatch<SetStateAction<Date | undefined>>;
   endDate: Date | undefined;
-  setEndDate: Dispatch<SetStateAction<Date | undefined>>;
   adults: number | undefined;
-  setAdults: Dispatch<SetStateAction<number | undefined>>;
   children: number | undefined;
-  setChildren: Dispatch<SetStateAction<number | undefined>>;
   shouldRefetchRooms: boolean;
-  setShouldRefetchRooms: Dispatch<SetStateAction<boolean>>;
+}
+
+type Action =
+  | { type: "SET_ROOMS"; payload: RoomWithQuantity[] }
+  | { type: "SET_START_DATE"; payload: Date | undefined }
+  | { type: "SET_END_DATE"; payload: Date | undefined }
+  | { type: "SET_ADULTS"; payload: number | undefined }
+  | { type: "SET_CHILDREN"; payload: number | undefined }
+  | { type: "SET_SHOULD_REFETCH_ROOMS"; payload: boolean };
+
+const initialState: RoomsState = {
+  rooms: [],
+  startDate: undefined,
+  endDate: undefined,
+  adults: undefined,
+  children: undefined,
+  shouldRefetchRooms: false,
+};
+
+function roomsReducer(state: RoomsState, action: Action): RoomsState {
+  switch (action.type) {
+    case "SET_ROOMS":
+      return { ...state, rooms: action.payload };
+    case "SET_START_DATE":
+      return { ...state, startDate: action.payload };
+    case "SET_END_DATE":
+      return { ...state, endDate: action.payload };
+    case "SET_ADULTS":
+      return { ...state, adults: action.payload };
+    case "SET_CHILDREN":
+      return { ...state, children: action.payload };
+    case "SET_SHOULD_REFETCH_ROOMS":
+      return { ...state, shouldRefetchRooms: action.payload };
+    default:
+      return state;
+  }
+}
+
+export interface RoomsContextProps {
+  state: RoomsState;
+  dispatch: React.Dispatch<Action>;
 }
 
 interface RoomsContextProviderProps {
@@ -33,12 +66,7 @@ interface RoomsContextProviderProps {
 const RoomsContext = createContext<RoomsContextProps>({} as RoomsContextProps);
 
 export const RoomsContextProvider: FC<RoomsContextProviderProps> = (props) => {
-  const [rooms, setRooms] = useState<RoomWithQuantity[]>([]);
-  const [startDate, setStartDate] = useState<Date>();
-  const [endDate, setEndDate] = useState<Date>();
-  const [adults, setAdults] = useState<number>();
-  const [children, setChildren] = useState<number>();
-  const [shouldRefetchRooms, setShouldRefetchRooms] = useState(false);
+  const [state, dispatch] = useReducer(roomsReducer, initialState);
 
   useEffect(() => {
     const storageRooms = window.localStorage.getItem("rooms") ?? "";
@@ -50,27 +78,25 @@ export const RoomsContextProvider: FC<RoomsContextProviderProps> = (props) => {
     if (savedStartDate) {
       const date = parseISO(savedStartDate);
       const utcDate = formatISO(date, { representation: "complete" });
-
-      setStartDate(new Date(utcDate));
+      dispatch({ type: "SET_START_DATE", payload: new Date(utcDate) });
     }
     if (savedEndDate) {
       const date = parseISO(savedEndDate);
       const utcDate = formatISO(date, { representation: "complete" });
-
-      setEndDate(new Date(utcDate));
+      dispatch({ type: "SET_END_DATE", payload: new Date(utcDate) });
     }
     if (savedAdults) {
-      setAdults(parseInt(savedAdults));
+      dispatch({ type: "SET_ADULTS", payload: parseInt(savedAdults) });
     }
     if (savedChildren) {
-      setChildren(parseInt(savedChildren));
+      dispatch({ type: "SET_CHILDREN", payload: parseInt(savedChildren) });
     }
 
     if (storageRooms) {
       try {
         const parsedRooms: RoomWithQuantity[] = JSON.parse(storageRooms);
         if (parsedRooms?.length > 0) {
-          setRooms(parsedRooms);
+          dispatch({ type: "SET_ROOMS", payload: parsedRooms });
         }
       } catch (error) {
         console.error("Error parsing rooms from localStorage:", error);
@@ -81,18 +107,8 @@ export const RoomsContextProvider: FC<RoomsContextProviderProps> = (props) => {
   return (
     <RoomsContext.Provider
       value={{
-        rooms,
-        setRooms,
-        startDate,
-        setStartDate,
-        endDate,
-        setEndDate,
-        adults,
-        setAdults,
-        children,
-        setChildren,
-        shouldRefetchRooms,
-        setShouldRefetchRooms,
+        state,
+        dispatch,
       }}
     >
       {props.children}

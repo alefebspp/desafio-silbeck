@@ -13,48 +13,44 @@ import { DatePicker } from "./DatePicker";
 import { useRoomsContext } from "@/contexts/roomsContext";
 
 export default function SearchBar() {
-  const {
-    startDate,
-    setStartDate,
-    endDate,
-    setEndDate,
-    adults,
-    setAdults,
-    children,
-    setChildren,
-    setShouldRefetchRooms,
-  } = useRoomsContext();
+  const { state, dispatch } = useRoomsContext();
 
   function onStartDateSelect(date?: Date) {
-    setStartDate(date);
+    dispatch({ type: "SET_START_DATE", payload: date });
   }
 
   function onEndDateSelect(date?: Date) {
-    setEndDate(date);
+    dispatch({ type: "SET_END_DATE", payload: date });
   }
 
   function onAdultsValueChange(value: string) {
-    setAdults(parseInt(value));
+    dispatch({ type: "SET_ADULTS", payload: parseInt(value) });
   }
 
   function onChildrenValueChange(value: string) {
-    setChildren(parseInt(value));
+    dispatch({ type: "SET_CHILDREN", payload: parseInt(value) });
   }
 
   function handleSearchRequest() {
-    if (startDate) {
-      window.localStorage.setItem("startDate", format(startDate, "yyyy-MM-dd"));
+    if (state.startDate) {
+      window.localStorage.setItem(
+        "startDate",
+        format(state.startDate, "yyyy-MM-dd")
+      );
     }
-    if (endDate) {
-      window.localStorage.setItem("endDate", format(endDate, "yyyy-MM-dd"));
+    if (state.endDate) {
+      window.localStorage.setItem(
+        "endDate",
+        format(state.endDate, "yyyy-MM-dd")
+      );
     }
-    if (adults) {
-      window.localStorage.setItem("adults", adults.toString());
+    if (state.adults) {
+      window.localStorage.setItem("adults", state.adults.toString());
     }
-    if (children) {
-      window.localStorage.setItem("children", children.toString());
+    if (state.children) {
+      window.localStorage.setItem("children", state.children.toString());
     }
-    setShouldRefetchRooms(true);
+    dispatch({ type: "SET_SHOULD_REFETCH_ROOMS", payload: true });
   }
 
   return (
@@ -67,14 +63,14 @@ export default function SearchBar() {
           <div className="flex flex-col lg:flex-row lg:gap-4 3xl:gap-8">
             <div className="flex flex-col gap-1 lg:w-[calc(50%-0.5rem)] lg:max-w-64 3xl:min-w-64">
               <label htmlFor="">Entrada</label>
-              <DatePicker date={startDate} onSelect={onStartDateSelect} />
+              <DatePicker date={state.startDate} onSelect={onStartDateSelect} />
             </div>
             <div className="flex flex-col gap-1 lg:w-[calc(50%-0.5rem)] lg:max-w-64 3xl:min-w-64">
               <label htmlFor="">Saída</label>
               <DatePicker
-                date={endDate}
+                date={state.endDate}
                 onSelect={onEndDateSelect}
-                startsAt={startDate ? startDate : null}
+                startsAt={state.startDate ? state.startDate : null}
               />
             </div>
           </div>
@@ -87,7 +83,7 @@ export default function SearchBar() {
             <div className="flex flex-col gap-1 lg:w-[calc(50%-0.5rem)] lg:max-w-64 3xl:min-w-64">
               <label htmlFor="">Adultos</label>
               <Select
-                value={adults?.toString()}
+                value={state.adults?.toString()}
                 onValueChange={(value) => onAdultsValueChange(value)}
               >
                 <SelectTrigger>
@@ -105,7 +101,7 @@ export default function SearchBar() {
             <div className="flex flex-col gap-1 lg:w-[calc(50%-0.5rem)] lg:max-w-64 3xl:min-w-64">
               <label htmlFor="">Crianças</label>
               <Select
-                value={children?.toString()}
+                value={state.children?.toString()}
                 onValueChange={(value) => onChildrenValueChange(value)}
               >
                 <SelectTrigger>

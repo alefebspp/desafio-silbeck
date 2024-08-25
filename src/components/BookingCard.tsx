@@ -12,10 +12,10 @@ type Props = {
 };
 
 export default function BookingCard({ room, quantity }: Props) {
-  const { startDate, endDate } = useRoomsContext();
+  const { state } = useRoomsContext();
   const { removeRoom, addRoomQuantity, removeRoomQuantity } = useCart();
-  const shouldShowRange = startDate && endDate;
-  const shouldShowStart = startDate && !endDate;
+  const shouldShowRange = state.startDate && state.endDate;
+  const shouldShowStart = state.startDate && !state.endDate;
 
   return (
     <div className="py-6 flex justify-between border-b border-font-light/20">
@@ -24,12 +24,14 @@ export default function BookingCard({ room, quantity }: Props) {
         <p>Diárias: 2</p>
         {!shouldShowRange && !shouldShowStart && <p>Estadia: a definir</p>}
         {shouldShowStart && (
-          <p>Estadia: {format(startDate, "dd/MM/yyyy")} - a definir</p>
+          <p>
+            Estadia: {format(state.startDate || "", "dd/MM/yyyy")} - a definir
+          </p>
         )}
         {shouldShowRange && (
           <p>
-            Estadia: {format(startDate, "dd/MM/yyyy")} -{" "}
-            {format(endDate, "dd/MM/yyyy")}
+            Estadia: {format(state.startDate || "", "dd/MM/yyyy")} -{" "}
+            {format(state.endDate || "", "dd/MM/yyyy")}
           </p>
         )}
         <p>Qtde Hóspedes: {room.hospedes}</p>

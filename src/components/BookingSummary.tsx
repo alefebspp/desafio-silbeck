@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Button, buttonVariants } from "./ui/button";
 import { faCheck } from "@fortawesome/free-solid-svg-icons";
@@ -6,15 +7,17 @@ import BookingCard from "./BookingCard";
 import EmptyCart from "./EmptyCart";
 
 export default function BookingSummary() {
-  const { rooms } = useRoomsContext();
+  const { state } = useRoomsContext();
 
-  const cartIsEmpty = rooms.length == 0;
+  const cartIsEmpty = state.rooms.length == 0;
 
-  const bookingTotal = rooms.reduce((acc, item) => {
-    const roomPrice = item.room.preco;
-    const roomQuantity = item.quantity;
-    return acc + roomQuantity * roomPrice;
-  }, 0);
+  const bookingTotal = useMemo(() => {
+    return state.rooms.reduce((acc, item) => {
+      const roomPrice = item.room.preco;
+      const roomQuantity = item.quantity;
+      return acc + roomQuantity * roomPrice;
+    }, 0);
+  }, [state.rooms]);
 
   return (
     <div className="h-fit bg-white flex flex-col lg:rounded-lg p-6 lg:p-12 lg:px-20 xl:p-8 text-graphite xl:w-1/2">
@@ -25,7 +28,7 @@ export default function BookingSummary() {
           <h1 className="text-2xl font-semibold mb-4">Resumo da reserva</h1>
 
           <div className="flex flex-col">
-            {rooms.map(({ room, quantity }) => (
+            {state.rooms.map(({ room, quantity }) => (
               <BookingCard key={room.id} quantity={quantity} room={room} />
             ))}
             <div className="flex flex-col gap-8 pt-6">
