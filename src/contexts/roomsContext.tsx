@@ -18,6 +18,7 @@ export interface RoomsState {
   shouldRefetchRooms: boolean;
 }
 
+//TIP: Rename action type to user interactions like: added, removed...
 type Action =
   | { type: "SET_ROOMS"; payload: RoomWithQuantity[] }
   | { type: "SET_START_DATE"; payload: Date | undefined }
